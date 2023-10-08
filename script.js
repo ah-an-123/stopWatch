@@ -12,16 +12,18 @@ let ms = 0o0;
 
 
 startButton.addEventListener('click', () => {
+    if (!timerId) {
 
-    timerId = setInterval(showTime, 10)
+        timerId = setInterval(showTime, 10)
+    }
 
 })
 
 // Stop Button Even Handler
 
 stopButton.addEventListener('click', () => {
-    // console.log("Hello Ahsan")
     clearInterval(timerId);
+    timerId = null;
 })
 
 
@@ -29,13 +31,13 @@ stopButton.addEventListener('click', () => {
 
 resetButton.addEventListener('click', () => {
     clearInterval(timerId);
+    timerId = null;
     timerDisplay.innerHTML = "00:00:00"
     ms = s = min = 0;
 })
 
-// Function
+// Function of showTime
 function showTime() {
-
     if (timerId != 0) {
         ms++;
         if (ms == 100) {
@@ -51,7 +53,4 @@ function showTime() {
         let minString = min < 10 ? `0${min}` : `${min}`
         timerDisplay.innerHTML = `${minString}:${sString}:${msString}`
     }
-
-
-
 }
