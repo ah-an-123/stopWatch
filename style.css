@@ -1,37 +1,344 @@
-* {
-    margin: 0;
-    padding: 0;
-    font-family: Verdana, Geneva, Tahoma, sans-serif;
-}
+   :root {
+       --bg: #0a0a0f;
+       --panel: #111118;
+       --border: #1e1e2e;
+       --accent: #00ffe0;
+       --accent-dim: rgba(0, 255, 224, 0.08);
+       --accent-glow: rgba(0, 255, 224, 0.35);
+       --red: #ff4060;
+       --red-dim: rgba(255, 64, 96, 0.12);
+       --text: #e8e8f0;
+       --muted: #4a4a6a;
+       --tick: #1a1a2a;
+   }
 
-body {
-    display: flex;
-    min-height: 100vh;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    background-color: rgba(0, 0, 0, 0.5);
-}
+   *,
+   *::before,
+   *::after {
+       margin: 0;
+       padding: 0;
+       box-sizing: border-box;
+   }
 
-.stopWatch {
-    background-color: rgba(0, 0, 0, 0.9);
-    color: white;
-    font-size: 35px;
-    padding: 20px 25px;
-    border-radius: 10px;
-    font-weight: 600;
-    box-shadow: 5px 5px 15px greenyellow;
-}
-.buttons{
-    margin-top: 15px;
-}
-.btn{
-    border: none;
-    background-color: var(--clr);
-    color: white;
-    font-size: 20px;
-    padding: 8px 10px;
-    border-radius: 7px;
-    cursor:pointer;
-}
+   body {
+       min-height: 100vh;
+       background: var(--bg);
+       display: flex;
+       align-items: center;
+       justify-content: center;
+       font-family: 'DM Mono', monospace;
+       overflow: hidden;
+   }
 
+   /* Animated grid background */
+   body::before {
+       content: '';
+       position: fixed;
+       inset: 0;
+       background-image:
+           linear-gradient(var(--tick) 1px, transparent 1px),
+           linear-gradient(90deg, var(--tick) 1px, transparent 1px);
+       background-size: 48px 48px;
+       opacity: 0.5;
+       pointer-events: none;
+   }
+
+   body::after {
+       content: '';
+       position: fixed;
+       inset: 0;
+       background: radial-gradient(ellipse 70% 60% at 50% 50%, rgba(0, 255, 224, 0.04) 0%, transparent 70%);
+       pointer-events: none;
+   }
+
+   .card {
+       position: relative;
+       background: var(--panel);
+       border: 1px solid var(--border);
+       border-radius: 24px;
+       padding: 52px 56px 44px;
+       width: 420px;
+       box-shadow:
+           0 0 0 1px rgba(255, 255, 255, 0.04) inset,
+           0 32px 80px rgba(0, 0, 0, 0.6),
+           0 0 60px rgba(0, 255, 224, 0.05);
+       animation: fadeIn 0.6s ease both;
+   }
+
+   @keyframes fadeIn {
+       from {
+           opacity: 0;
+           transform: translateY(20px) scale(0.97);
+       }
+
+       to {
+           opacity: 1;
+           transform: translateY(0) scale(1);
+       }
+   }
+
+   /* Corner accents */
+   .card::before,
+   .card::after {
+       content: '';
+       position: absolute;
+       width: 18px;
+       height: 18px;
+       border-color: var(--accent);
+       border-style: solid;
+   }
+
+   .card::before {
+       top: 16px;
+       left: 16px;
+       border-width: 2px 0 0 2px;
+       border-radius: 4px 0 0 0;
+   }
+
+   .card::after {
+       bottom: 16px;
+       right: 16px;
+       border-width: 0 2px 2px 0;
+       border-radius: 0 0 4px 0;
+   }
+
+   .label {
+       font-family: 'DM Mono', monospace;
+       font-size: 10px;
+       letter-spacing: 0.25em;
+       text-transform: uppercase;
+       color: var(--muted);
+       margin-bottom: 28px;
+       display: flex;
+       align-items: center;
+       gap: 10px;
+   }
+
+   .label::after {
+       content: '';
+       flex: 1;
+       height: 1px;
+       background: var(--border);
+   }
+
+   .status-dot {
+       width: 6px;
+       height: 6px;
+       border-radius: 50%;
+       background: var(--muted);
+       transition: background 0.3s, box-shadow 0.3s;
+       flex-shrink: 0;
+   }
+
+   .status-dot.running {
+       background: var(--accent);
+       box-shadow: 0 0 8px var(--accent-glow);
+       animation: pulse 1s ease-in-out infinite;
+   }
+
+   @keyframes pulse {
+
+       0%,
+       100% {
+           opacity: 1;
+       }
+
+       50% {
+           opacity: 0.4;
+       }
+   }
+
+   /* Main time display */
+   .timer-display {
+       font-family: 'Bebas Neue', sans-serif;
+       font-size: 88px;
+       letter-spacing: 0.04em;
+       color: var(--text);
+       line-height: 1;
+       text-align: center;
+       transition: color 0.3s;
+       position: relative;
+   }
+
+   .timer-display.running {
+       color: var(--accent);
+       text-shadow: 0 0 40px var(--accent-glow), 0 0 80px rgba(0, 255, 224, 0.1);
+   }
+
+   /* Millisecond sub-display */
+   .ms-display {
+       font-family: 'DM Mono', monospace;
+       font-size: 13px;
+       color: var(--muted);
+       text-align: center;
+       margin-top: 4px;
+       letter-spacing: 0.15em;
+       transition: color 0.3s;
+   }
+
+   .ms-display.running {
+       color: rgba(0, 255, 224, 0.5);
+   }
+
+   /* Progress bar */
+   .progress-track {
+       margin: 28px 0 32px;
+       height: 2px;
+       background: var(--border);
+       border-radius: 2px;
+       overflow: hidden;
+   }
+
+   .progress-bar {
+       height: 100%;
+       width: 0%;
+       background: linear-gradient(90deg, transparent, var(--accent));
+       border-radius: 2px;
+       transition: width 0.01s linear;
+       box-shadow: 0 0 8px var(--accent-glow);
+   }
+
+   /* Buttons */
+   .buttons {
+       display: grid;
+       grid-template-columns: 1fr 1fr 1fr;
+       gap: 10px;
+   }
+
+   .btn {
+       border: 1px solid var(--border);
+       background: transparent;
+       color: var(--muted);
+       font-family: 'DM Mono', monospace;
+       font-size: 11px;
+       letter-spacing: 0.15em;
+       text-transform: uppercase;
+       padding: 14px 10px;
+       border-radius: 10px;
+       cursor: pointer;
+       transition: all 0.2s ease;
+       position: relative;
+       overflow: hidden;
+   }
+
+   .btn::before {
+       content: '';
+       position: absolute;
+       inset: 0;
+       opacity: 0;
+       transition: opacity 0.2s;
+   }
+
+   .btn:hover {
+       transform: translateY(-2px);
+   }
+
+   .btn:active {
+       transform: translateY(0) scale(0.97);
+   }
+
+   /* Start button */
+   #startButton {
+       border-color: rgba(0, 255, 224, 0.3);
+       color: var(--accent);
+   }
+
+   #startButton::before {
+       background: var(--accent-dim);
+   }
+
+   #startButton:hover {
+       border-color: var(--accent);
+       box-shadow: 0 0 20px rgba(0, 255, 224, 0.15), 0 4px 12px rgba(0, 0, 0, 0.3);
+   }
+
+   #startButton:hover::before {
+       opacity: 1;
+   }
+
+   /* Stop button */
+   #stopButton {
+       border-color: rgba(255, 64, 96, 0.3);
+       color: var(--red);
+   }
+
+   #stopButton::before {
+       background: var(--red-dim);
+   }
+
+   #stopButton:hover {
+       border-color: var(--red);
+       box-shadow: 0 0 20px rgba(255, 64, 96, 0.15), 0 4px 12px rgba(0, 0, 0, 0.3);
+   }
+
+   #stopButton:hover::before {
+       opacity: 1;
+   }
+
+   /* Reset button */
+   #resetButton {
+       border-color: var(--border);
+       color: var(--muted);
+   }
+
+   #resetButton::before {
+       background: rgba(255, 255, 255, 0.03);
+   }
+
+   #resetButton:hover {
+       border-color: rgba(255, 255, 255, 0.15);
+       color: var(--text);
+       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+   }
+
+   #resetButton:hover::before {
+       opacity: 1;
+   }
+
+   /* Icon inside buttons */
+   .btn-icon {
+       display: block;
+       font-size: 18px;
+       margin-bottom: 5px;
+   }
+
+   /* Lap section */
+   .lap-section {
+       margin-top: 20px;
+       max-height: 130px;
+       overflow-y: auto;
+       scrollbar-width: thin;
+       scrollbar-color: var(--border) transparent;
+   }
+
+   .lap-item {
+       display: flex;
+       justify-content: space-between;
+       padding: 7px 0;
+       border-bottom: 1px solid var(--border);
+       font-size: 11px;
+       color: var(--muted);
+       letter-spacing: 0.05em;
+       animation: lapIn 0.2s ease both;
+   }
+
+   @keyframes lapIn {
+       from {
+           opacity: 0;
+           transform: translateX(-8px);
+       }
+
+       to {
+           opacity: 1;
+           transform: translateX(0);
+       }
+   }
+
+   .lap-item:last-child {
+       border-bottom: none;
+   }
+
+   .lap-num {
+       color: var(--accent);
+       opacity: 0.6;
+   }
