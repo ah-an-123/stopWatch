@@ -5,22 +5,38 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Stop Watch</title>
-    <link rel="stylesheet" href="/stopWatch/style.css">
+    <link rel="stylesheet" href="stopWatch/style.css">
 </head>
 
 <body>
-    <div class="stopWatch">
-        <div class="timerDisplay">
-            00:00:00
+    <div class="card">
+        <div class="label">
+            <span class="status-dot" id="statusDot"></span>
+            Stopwatch
         </div>
-    </div>
-    <div class="buttons">
-        <button style="--clr:red;" id="resetButton" class="btn">Reset</button>
-        <button style="--clr:blue;" id="stopButton" class="btn">Stop</button>
-        <button style="--clr:green;" id="startButton" class="btn">Start</button>
 
+        <div class="timer-display" id="timerDisplay">00:00</div>
+        <div class="ms-display" id="msDisplay">· 00 ms ·</div>
+
+        <div class="progress-track">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+
+        <div class="buttons">
+            <button class="btn" id="resetButton">
+                <span class="btn-icon">↺</span>Reset
+            </button>
+            <button class="btn" id="stopButton">
+                <span class="btn-icon">⏸</span>Pause
+            </button>
+            <button class="btn" id="startButton">
+                <span class="btn-icon">▶</span>Start
+            </button>
+        </div>
+        <div class="lap-section" id="lapSection"></div>
     </div>
-<script src="/stopWatch/script.js"></script>
+
+    <script src="stopWatch/script.js"></script>
 </body>
 
 </html>
